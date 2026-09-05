@@ -53,6 +53,8 @@ export interface RawSources {
   nhtsaVpic?: unknown;
   /** True when the payloads came from bundled demo fixtures, not live APIs. */
   fixture?: boolean;
+  /** ISO timestamp of when the payloads were fetched. */
+  fetchedAt?: string;
 }
 
 export interface VehicleCore {

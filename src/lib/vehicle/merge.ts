@@ -29,6 +29,7 @@ export interface UkMergeInput {
   ves?: VesVehicle | null;
   mot?: MotVehicle | null;
   fixture?: boolean;
+  now?: Date;
 }
 
 function compact<T extends object>(obj: T): T {
@@ -146,7 +147,12 @@ export function candidateFromUk(input: UkMergeInput): VehicleCandidate | null {
     colour,
     uk,
     provenance,
-    sources: compact({ dvlaVes: ves ?? undefined, dvsaMot: mot ?? undefined, fixture: input.fixture || undefined }),
+    sources: compact({
+      dvlaVes: ves ?? undefined,
+      dvsaMot: mot ?? undefined,
+      fixture: input.fixture || undefined,
+      fetchedAt: (input.now ?? new Date()).toISOString(),
+    }),
     warnings,
     needsConfirmation,
   };

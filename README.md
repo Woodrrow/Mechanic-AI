@@ -2,7 +2,7 @@
 
 A mobile-first PWA that helps UK car owners diagnose and repair their own cars at home. Built on free tiers only.
 
-**Status: Phase 1 (My Garage).** Add a car by UK registration (or VIN), see exactly what the free public records say about it and where each fact came from, and keep it in your garage. See [`docs/phase-1.md`](docs/phase-1.md) for the plan, the decisions taken, open questions, and what the APIs can and cannot provide.
+**Status: Phase 2 (Your car's history).** Add a car by UK registration, VIN, or by typing in the V5C details; see exactly what the free public records say about it and where each fact came from; and read its MOT history in plain English, with what has probably worsened since and a suggested job for each item. See [`docs/phase-1.md`](docs/phase-1.md) and [`docs/phase-2.md`](docs/phase-2.md) for the plans, decisions, open questions, and what the APIs can and cannot provide.
 
 ## Run it
 
@@ -44,9 +44,10 @@ Push to GitHub, import into Vercel (Hobby tier), add the environment variables f
 ## Layout
 
 ```
-src/app/                      routes: / (garage), /garage/add, /garage/[id], /api/vehicles/lookup, PWA manifest + icons
+src/app/                      routes: / (garage), /garage/add, /garage/[id], /garage/[id]/history, /api/vehicles/lookup, PWA manifest + icons
 src/components/               UI (all client components are marked "use client")
-src/lib/vehicle/              canonical Vehicle model, plate/VIN validation, merge + provenance, lookup orchestration
+src/lib/vehicle/              canonical Vehicle model, plate/VIN validation, manual entry, merge + provenance, lookup orchestration
+src/lib/mot/                  MOT defect parsing, plain-English rule library, history analysis, refresh merge
 src/lib/providers/            one client per free API, plus demo fixtures shaped like their responses
 src/lib/garage/               GarageStore interface with localStorage and Supabase implementations
 supabase/migrations/          Postgres schema with row-level security

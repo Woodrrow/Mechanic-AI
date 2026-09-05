@@ -12,6 +12,7 @@ export interface GarageStore {
   list(): Promise<Vehicle[]>;
   get(id: string): Promise<Vehicle | null>;
   add(vehicle: VehicleCore): Promise<Vehicle>;
+  update(id: string, patch: Partial<VehicleCore>): Promise<Vehicle>;
   remove(id: string): Promise<void>;
 }
 

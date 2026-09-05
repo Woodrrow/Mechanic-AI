@@ -16,7 +16,7 @@ import {
 import { formatRegistration } from "@/lib/vehicle/registration";
 import type { Source, Vehicle } from "@/lib/vehicle/types";
 import { FieldSource } from "./source-badge";
-import { Button, Card, Plate } from "./ui";
+import { Button, ButtonLink, Card, Plate } from "./ui";
 
 function Row({ label, value, children }: { label: string; value: string | null | undefined; children?: React.ReactNode }) {
   return (
@@ -128,6 +128,10 @@ export function VehicleDetail({ id }: { id: string }) {
         ) : null}
       </Card>
 
+      <ButtonLink href={`/garage/${vehicle.id}/history`} variant="secondary">
+        Your car&apos;s history{uk?.motTestCount ? ` · ${uk.motTestCount} MOT tests` : ""}
+      </ButtonLink>
+
       {uk ? (
         <Card>
           <h2 className="font-semibold">UK record</h2>
@@ -140,12 +144,6 @@ export function VehicleDetail({ id }: { id: string }) {
             {uk.hasOutstandingRecall ? <Row label="Outstanding recall" value={uk.hasOutstandingRecall} /> : null}
             {uk.motTestCount !== undefined ? <Row label="MOT tests on record" value={String(uk.motTestCount)} /> : null}
           </dl>
-          {uk.motTestCount ? (
-            <p className="mt-3 rounded-lg border border-accent/30 bg-accent/5 p-3 text-xs">
-              Your MOT history is saved with this car. The plain-English view of its advisories, and what has
-              probably worsened since, is Phase 2.
-            </p>
-          ) : null}
         </Card>
       ) : null}
 

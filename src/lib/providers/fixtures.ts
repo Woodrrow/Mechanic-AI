@@ -119,6 +119,90 @@ const FOCUS_MOT: MotVehicle = {
         },
       ],
     },
+    {
+      completedDate: "2023-02-08T11:30:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2024-02-07",
+      odometerValue: "62110",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "655102938471",
+      dataSource: "DVSA",
+      defects: [],
+    },
+    {
+      completedDate: "2022-02-14T09:05:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2023-02-13",
+      odometerValue: "56800",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "544019283746",
+      dataSource: "DVSA",
+      defects: [
+        {
+          text: "Front Brake disc worn, pitted or scored, but not seriously weakened (1.1.14 (a) (ii))",
+          type: "ADVISORY",
+          dangerous: false,
+        },
+      ],
+    },
+    {
+      completedDate: "2021-02-10T15:20:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2022-02-09",
+      odometerValue: "49200",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "433928174650",
+      dataSource: "DVSA",
+      defects: [
+        {
+          text: "Nearside Rear Tyre worn close to legal limit/worn on edge (5.2.3 (e))",
+          type: "ADVISORY",
+          dangerous: false,
+        },
+      ],
+    },
+    {
+      completedDate: "2020-03-02T10:00:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2021-03-01",
+      odometerValue: "40900",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "322817364590",
+      dataSource: "DVSA",
+      defects: [],
+    },
+    {
+      completedDate: "2019-03-06T13:45:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2020-03-05",
+      odometerValue: "32400",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "211706253489",
+      dataSource: "DVSA",
+      defects: [
+        { text: "Offside Rear Windscreen wiper blade deteriorated (3.4 (b) (i))", type: "ADVISORY", dangerous: false },
+      ],
+    },
+    // Pre-May-2018 test: legacy manual codes, no defect-type categories beyond advisory.
+    {
+      completedDate: "2018-03-09T09:15:00.000Z",
+      testResult: "PASSED",
+      expiryDate: "2019-03-08",
+      odometerValue: "24100",
+      odometerUnit: "MI",
+      odometerResultType: "READ",
+      motTestNumber: "100695142378",
+      dataSource: "DVSA",
+      defects: [
+        { text: "Nearside Front Tyre worn close to the legal limit (4.1.E.1)", type: "ADVISORY", dangerous: false },
+        { text: "Exhaust has a minor leak of exhaust gases (7.1.2)", type: "ADVISORY", dangerous: false },
+      ],
+    },
   ],
 };
 
@@ -268,7 +352,7 @@ const DVLA_TEST_VES: VesVehicle = {
 
 export const REGISTRATION_FIXTURES: Record<string, RegistrationFixture> = {
   AB15CDE: {
-    note: "2015 Ford Focus 1.6 petrol with a full MOT history: advisories on brake pads, a tyre and an oil leak.",
+    note: "2015 Ford Focus 1.6 petrol with ten MOT tests, one failure, and advisories on brakes, tyres and an oil leak.",
     ves: FOCUS_VES,
     mot: FOCUS_MOT,
   },

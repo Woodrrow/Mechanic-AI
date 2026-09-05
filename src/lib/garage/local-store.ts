@@ -37,6 +37,16 @@ export class LocalGarageStore implements GarageStore {
     return vehicle;
   }
 
+  async update(id: string, patch: Partial<VehicleCore>): Promise<Vehicle> {
+    const vehicles = this.read();
+    const index = vehicles.findIndex((v) => v.id === id);
+    if (index < 0) throw new Error("That car is no longer in your garage.");
+    const updated: Vehicle = { ...vehicles[index], ...patch, id, updatedAt: new Date().toISOString() };
+    vehicles[index] = updated;
+    this.write(vehicles);
+    return updated;
+  }
+
   async remove(id: string): Promise<void> {
     this.write(this.read().filter((v) => v.id !== id));
   }

@@ -66,6 +66,7 @@ export function useVehicle(id: string) {
   const store = useMemo(() => getGarageStore(), []);
   const [vehicle, setVehicle] = useState<Vehicle | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,11 +81,22 @@ export function useVehicle(id: string) {
     return () => {
       cancelled = true;
     };
-  }, [store, id]);
+  }, [store, id, version]);
+
+  const reload = useCallback(() => setVersion((v) => v + 1), []);
+
+  const update = useCallback(
+    async (patch: Partial<VehicleCore>) => {
+      const updated = await store.update(id, patch);
+      reload();
+      return updated;
+    },
+    [store, id, reload],
+  );
 
   const remove = useCallback(async () => {
     await store.remove(id);
   }, [store, id]);
 
-  return { vehicle, loading: vehicle === undefined && error === null, error, remove, storeKind: store.kind };
+  return { vehicle, loading: vehicle === undefined && error === null, error, update, reload, remove, storeKind: store.kind };
 }

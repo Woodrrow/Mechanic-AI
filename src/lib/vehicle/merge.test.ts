@@ -22,7 +22,7 @@ describe("candidateFromUk", () => {
     expect(c!.warnings).toContain(TRANSMISSION_WARNING);
     expect(c!.provenance.find((p) => p.field === "model")?.source).toBe("dvsa_mot");
     expect(c!.provenance.find((p) => p.field === "year")?.source).toBe("dvla_ves");
-    expect(c!.uk?.motTestCount).toBe(4);
+    expect(c!.uk?.motTestCount).toBe(10);
     expect(c!.uk?.motExpiryDate).toBe("2027-02-11");
   });
 

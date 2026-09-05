@@ -57,6 +57,34 @@ function rowToVehicle(row: GarageRow): Vehicle {
   };
 }
 
+type GarageRowPatch = Partial<Omit<GarageRow, "id" | "user_id" | "created_at" | "updated_at">>;
+
+const COLUMN: Record<keyof VehicleCore, keyof GarageRowPatch> = {
+  country: "country",
+  registration: "registration",
+  vin: "vin",
+  make: "make",
+  makeRaw: "make_raw",
+  model: "model",
+  year: "year",
+  engineCc: "engine_cc",
+  fuel: "fuel",
+  transmission: "transmission",
+  colour: "colour",
+  uk: "uk",
+  provenance: "provenance",
+  sources: "sources",
+};
+
+function patchToRow(patch: Partial<VehicleCore>): GarageRowPatch {
+  const row: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(patch)) {
+    const column = COLUMN[key as keyof VehicleCore];
+    if (column && value !== undefined) row[column] = value;
+  }
+  return row as GarageRowPatch;
+}
+
 function vehicleToRow(core: VehicleCore): Omit<GarageRow, "id" | "user_id" | "created_at" | "updated_at"> {
   return {
     country: core.country,
@@ -115,6 +143,18 @@ export class SupabaseGarageStore implements GarageStore {
     const { data, error } = await this.client
       .from(TABLE)
       .insert(vehicleToRow(core))
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return rowToVehicle(data as GarageRow);
+  }
+
+  async update(id: string, patch: Partial<VehicleCore>): Promise<Vehicle> {
+    await this.ensureSession();
+    const { data, error } = await this.client
+      .from(TABLE)
+      .update(patchToRow(patch))
+      .eq("id", id)
       .select("*")
       .single();
     if (error) throw new Error(error.message);
