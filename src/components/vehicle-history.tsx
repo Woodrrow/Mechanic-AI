@@ -16,6 +16,7 @@ import {
   type ResolvedItem,
 } from "@/lib/mot/types";
 import { MotVehicleSchema } from "@/lib/providers/dvsa-mot";
+import { jobForRule } from "@/lib/jobs/catalogue";
 import { motSummary, vehicleTitle } from "@/lib/vehicle/format";
 import { lookupVehicle } from "@/lib/vehicle/lookup-client";
 import { formatRegistration } from "@/lib/vehicle/registration";
@@ -82,10 +83,11 @@ function TestersWords({ defect }: { defect: ExplainedDefect }) {
   );
 }
 
-function OpenItemCard({ item }: { item: OpenItem }) {
+function OpenItemCard({ item, vehicleId }: { item: OpenItem; vehicleId: string }) {
   const { defect } = item;
   const { explanation } = defect;
   const job = explanation.job;
+  const catalogueJob = jobForRule(explanation.ruleId);
   return (
     <Card>
       <div className="flex flex-wrap items-center gap-2">
@@ -108,7 +110,13 @@ function OpenItemCard({ item }: { item: OpenItem }) {
           </div>
           <p className="mt-1 font-semibold">{job.name}</p>
           <p className="mt-1 text-sm text-muted">{job.summary}</p>
-          <p className="mt-2 text-xs text-muted">Step-by-step guide for your car: Phase 3.</p>
+          {catalogueJob ? (
+            <Link href={`/garage/${vehicleId}/jobs/${catalogueJob.id}`} className="mt-2 inline-block text-sm font-semibold text-accent">
+              Open the {catalogueJob.title.toLowerCase()} guide →
+            </Link>
+          ) : (
+            <p className="mt-2 text-xs text-muted">No step-by-step guide for this job yet.</p>
+          )}
         </div>
       ) : null}
       {item.timesNoted > 1 ? (
@@ -317,7 +325,7 @@ export function VehicleHistory({ id, canRefresh }: { id: string; canRefresh: boo
               </p>
             </div>
             {analysis.openItems.map((item) => (
-              <OpenItemCard key={item.defect.key} item={item} />
+              <OpenItemCard key={item.defect.key} item={item} vehicleId={vehicle.id} />
             ))}
           </section>
 

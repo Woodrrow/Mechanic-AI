@@ -10,7 +10,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:apis": "tsx scripts/verify-apis.mts"
+    "verify:apis": "tsx scripts/verify-apis.mts",
+    "guide:generate": "tsx scripts/generate-guide.mts",
+    "guide:review": "tsx scripts/review-guide.mts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",

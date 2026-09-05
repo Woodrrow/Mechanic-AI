@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "id": "front-brake-pads__ford__focus__2011-2018__1596__petrol",
+  "jobId": "front-brake-pads",
+  "scope": {
+    "makeRaw": "FORD",
+    "modelRaw": "FOCUS",
+    "yearFrom": 2011,
+    "yearTo": 2018,
+    "engineCc": 1596,
+    "fuel": "petrol",
+    "variantNotes": "Third-generation Focus (2011 to 2018) with the standard single-piston sliding front calipers. Not for ST or RS performance brakes."
+  },
+  "content": {
+    "summary": "Brake pads are the two friction blocks that clamp the spinning disc when you press the pedal. On this Focus each front wheel has one caliper holding a pair of pads. Changing them means taking the wheel off, swinging the caliper up, swapping the pads and putting it all back together. No hydraulic parts are opened, which is what keeps this an at-home job.",
+    "partLocation": "With the front wheel off, facing the hub from the side of the car: the disc is the large shiny plate. The caliper is the fist-sized casting clamped over the edge of the disc, towards the rear of the disc. The pads sit inside it, one each side of the disc. The two guide-pin bolts are on the back (inboard) face of the caliper and are reached from behind the hub.",
+    "difficulty": 3,
+    "timeMinutes": { "min": 60, "max": 120 },
+    "toolsExtra": [
+      {
+        "name": "7 mm hex (Allen) key or bit",
+        "why": "On this generation of Focus the two caliper guide-pin bolts usually take a 7 mm hex key rather than a spanner. Check yours before you start.",
+        "priceGbp": { "min": 3, "max": 8 }
+      },
+      {
+        "name": "Piston wind-back tool or a large G-clamp",
+        "why": "To push the caliper piston back so the new, thicker pads fit over the disc.",
+        "priceGbp": { "min": 3, "max": 15 }
+      }
+    ],
+    "partsNeeded": [
+      {
+        "name": "Front brake pad set (an axle set of four pads)",
+        "notes": "Buy by registration from a parts supplier. There is more than one pad shape for this model, so match the supplier's fitment note, not the picture."
+      },
+      { "name": "Copper or ceramic brake grease", "notes": "For the pad backs and ears only, never the friction face." },
+      { "name": "Brake cleaner", "notes": null }
+    ],
+    "steps": [
+      {
+        "title": "Check you have everything",
+        "instruction": "Lay out the tools and the new pads. Compare the new pads with the shape your supplier shows for this car. Read this whole guide once before you touch the car.",
+        "caution": null,
+        "checkpoint": "You have axle stands, chocks, a torque wrench and the two torque figures from the manual written down."
+      },
+      {
+        "title": "Make the car safe to lift",
+        "instruction": "Park on level, firm ground. Handbrake on, in gear or Park, and chock a rear wheel. With the wheel still on the ground, loosen each front wheel bolt half a turn.",
+        "caution": "Never loosen wheel bolts with the wheel in the air; the car can rock off the jack.",
+        "checkpoint": null
+      },
+      {
+        "title": "Lift and support",
+        "instruction": "Place the jack at the manufacturer's jacking point, the reinforced seam under the sill, marked with notches on this Focus. Raise until the wheel clears the ground, put an axle stand under a solid point nearby and lower the car onto it.",
+        "caution": "Never work on a car held only by a jack. A jack lifts; it does not hold.",
+        "checkpoint": "Push the car gently at the wing. Nothing moves."
+      },
+      {
+        "title": "Remove the wheel",
+        "instruction": "Take the wheel bolts fully out and lift the wheel off. Lay it flat under the sill as a backup in case the stand fails.",
+        "caution": null,
+        "checkpoint": null
+      },
+      {
+        "title": "Check the brake fluid reservoir",
+        "instruction": "Under the bonnet, find the brake fluid reservoir and take the cap off, resting it loosely on top. If the fluid is at the MAX line, draw a little out with a clean syringe, because pushing the pistons back raises the level.",
+        "caution": "Brake fluid strips paint. Wipe any spill straight away.",
+        "checkpoint": null
+      },
+      {
+        "title": "Undo the guide-pin bolts",
+        "instruction": "On the back of the caliper are two bolts, one above the other, usually 7 mm hex on this model. Hold the pin with a spanner if it turns with the bolt. Remove both bolts, or remove the lower one only and pivot the caliper up on the top pin.",
+        "caution": null,
+        "checkpoint": "The caliper lifts away from the disc freely. If it fights you, a pad is stuck in the carrier: tap the caliper gently, never lever against the disc face."
+      },
+      {
+        "title": "Hang the caliper",
+        "instruction": "Rest the caliper on the suspension or hang it from the spring with a cable tie or bungee.",
+        "caution": "Never let the caliper dangle by its brake hose. A damaged hose is brake failure.",
+        "checkpoint": null
+      },
+      {
+        "title": "Take out the old pads and clips",
+        "instruction": "Photograph how the anti-rattle clips and any shims sit before you disturb them. Slide the old pads out of the carrier.",
+        "caution": null,
+        "checkpoint": "Compare the old pads with the new. If one old pad is far more worn than the other, the caliper is probably sticking; see the gotchas before going on."
+      },
+      {
+        "title": "Inspect the disc",
+        "instruction": "Look for a raised lip at the outer edge, deep grooves, cracks or blue heat marks. Compare the thickness of the worn face with the minimum figure stamped on the disc's hub face or given in the manual.",
+        "caution": null,
+        "checkpoint": "If in doubt, replace the discs with the pads. That is a separate guide."
+      },
+      {
+        "title": "Clean the carrier",
+        "instruction": "Wire-brush the two channels where the pad ears sit until the new pads slide in and out freely with the new clips fitted. Finish with brake cleaner. New pads usually come with new clips; use them.",
+        "caution": null,
+        "checkpoint": "A new pad slides in the carrier by hand without forcing."
+      },
+      {
+        "title": "Push the piston back",
+        "instruction": "Hold an old pad flat against the piston and wind or clamp it back slowly and evenly until it is flush with the caliper body. Watch the reservoir level under the bonnet as you go.",
+        "caution": "If the piston will not move or its rubber boot is torn, stop. The caliper needs attention before new pads go in.",
+        "checkpoint": null
+      },
+      {
+        "title": "Fit the new pads",
+        "instruction": "Put a thin smear of brake grease on the metal backs and ears of the pads only. Slide them into the carrier, friction faces towards the disc. If one pad has a wear indicator, a small metal tab or a wire, it goes where the old one came from, normally the inner side.",
+        "caution": "Grease on the friction face or the disc means no brakes. If you touch either, clean it with brake cleaner.",
+        "checkpoint": null
+      },
+      {
+        "title": "Refit the caliper",
+        "instruction": "Swing the caliper down over the new pads, refit the guide-pin bolts and tighten them to the manual's figure with the torque wrench. Check the caliper sits square and the brake hose is not twisted.",
+        "caution": null,
+        "checkpoint": "Both guide-pin bolts torqued. The hose runs the same way it did before."
+      },
+      {
+        "title": "Wheel on, car down",
+        "instruction": "Refit the wheel and snug the bolts by hand in a star pattern. Lower the car to the ground, then tighten the wheel bolts to the manual's figure with the torque wrench, again in a star pattern.",
+        "caution": null,
+        "checkpoint": null
+      },
+      {
+        "title": "Repeat on the other side",
+        "instruction": "Pads are replaced as an axle set, both front wheels. Do the second side the same way.",
+        "caution": null,
+        "checkpoint": null
+      },
+      {
+        "title": "Before you drive anywhere",
+        "instruction": "Sitting in the car, pump the brake pedal until it is firm. The pistons have to travel back out to meet the new pads. Check the reservoir is between MIN and MAX, refit its cap, and look under the car for drips.",
+        "caution": "The first press of the pedal will go to the floor. Pump it up before the car moves an inch.",
+        "checkpoint": "The pedal is firm and stays firm when you hold steady pressure on it."
+      }
+    ],
+    "figures": [
+      {
+        "name": "Caliper guide-pin bolt torque",
+        "unit": "Nm",
+        "value": null,
+        "source": null,
+        "note": "In the workshop manual or the pad supplier's fitting notes for your exact model year. Guessing this bolt's torque is how calipers come loose."
+      },
+      {
+        "name": "Wheel bolt torque",
+        "unit": "Nm",
+        "value": null,
+        "source": null,
+        "note": "In the owner's handbook. Too loose and too tight can both fail."
+      },
+      {
+        "name": "Minimum disc thickness",
+        "unit": "mm",
+        "value": null,
+        "source": null,
+        "note": "Stamped on the disc's hub face or in the manual. Measure across the worn face, not the outer lip."
+      }
+    ],
+    "gotchas": [
+      "If the caliper did not slide back easily, or one pad was worn to the metal while the other looked fine, the slider pins or the piston are sticking. New pads will wear out fast and the wheel will run hot. Clean and re-grease the pins with the correct rubber-safe grease, or have the caliper looked at.",
+      "Some pads have a wear-sensor wire that plugs in at the caliper or in the wheel arch. If yours does, unplug it before removing the pad and plug the new one in.",
+      "Never press the brake pedal while a caliper is off the car. The piston will pop out and you will have a hydraulic job on your hands.",
+      "The anti-rattle clips go on before the pads. If the pads will not slide in, a clip is the wrong way round; it is not the wrong pad.",
+      "Squeal after fitting usually means dry pad backs or a missing shim, not bad pads.",
+      "Brake gently for the first hundred miles or so while the new pads bed in to the discs."
+    ],
+    "verification": [
+      "The pedal is firm after pumping and stays firm under steady foot pressure.",
+      "Both front wheels spin by hand with only a light, even rub from the pads.",
+      "After a slow, gentle test drive on a quiet road, the car stops straight with no pulling, grinding or heavy vibration, and neither front wheel is noticeably hotter than the other.",
+      "Brake fluid sits between MIN and MAX with the cap on, and there are no drips under the car."
+    ],
+    "ifWrong": [
+      "Pedal soft or goes to the floor after pumping: do not drive. Check for fluid leaks at the caliper and hose, and get help.",
+      "Grinding or scraping: a pad is in backwards or a clip is out of place. Wheel off and check.",
+      "Pulling to one side or one hot wheel: a caliper is sticking. Stop driving and inspect the slider pins and piston.",
+      "A warning light, or the pedal feels different from before: have a garage check it before using the car."
+    ],
+    "diagramLabels": {
+      "caliper": "Caliper (single piston on this Focus)",
+      "carrier": "Carrier bracket. Leave its two large bolts alone for a pad change",
+      "pads": "Inner and outer pads",
+      "disc": "Disc. Check for a lip at the edge and deep scoring",
+      "guidePins": "Two guide-pin bolts, usually 7 mm hex. Remove these to swing the caliper",
+      "bleedNipple": "Bleed nipple. Not needed for pads; do not open it",
+      "hub": "Hub and steering knuckle"
+    },
+    "videoQuery": "Ford Focus Mk3 2011-2018 front brake pads replacement",
+    "confidence": "medium",
+    "notesForReviewer": "Hand-written reference guide for the Phase 3 demo. Verify on the car: the 7 mm hex drive on the guide-pin bolts, and whether this trim has a pad wear-sensor wire. No torque or thickness figures are included by design."
+  },
+  "status": "reviewed",
+  "specCheck": { "ok": true, "violations": [] },
+  "generatedBy": {
+    "provider": "author",
+    "model": "hand-written reference guide",
+    "durationMs": null,
+    "promptTokens": null,
+    "completionTokens": null
+  },
+  "grounding": [
+    "Make: FORD",
+    "Model: FOCUS",
+    "Year of manufacture: 2015",
+    "Engine capacity: 1596 cc (1.6 litre)",
+    "Fuel: petrol",
+    "Job: Front brake pads (front-brake-pads), safety tier AMBER",
+    "Torque figures, fluid capacities and part numbers available: none. Every figure must be listed with value null."
+  ],
+  "generatedAt": "2026-09-05T12:00:00.000Z",
+  "reviewedAt": "2026-09-05T12:00:00.000Z",
+  "reviewedBy": "author (reference guide; re-check on the car before relying on it)",
+  "version": 1
+}

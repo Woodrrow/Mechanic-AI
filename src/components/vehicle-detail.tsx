@@ -16,7 +16,8 @@ import {
 import { formatRegistration } from "@/lib/vehicle/registration";
 import type { Source, Vehicle } from "@/lib/vehicle/types";
 import { FieldSource } from "./source-badge";
-import { Button, ButtonLink, Card, Plate } from "./ui";
+import { JOBS } from "@/lib/jobs/catalogue";
+import { Badge, Button, ButtonLink, Card, Plate } from "./ui";
 
 function Row({ label, value, children }: { label: string; value: string | null | undefined; children?: React.ReactNode }) {
   return (
@@ -131,6 +132,24 @@ export function VehicleDetail({ id }: { id: string }) {
       <ButtonLink href={`/garage/${vehicle.id}/history`} variant="secondary">
         Your car&apos;s history{uk?.motTestCount ? ` · ${uk.motTestCount} MOT tests` : ""}
       </ButtonLink>
+
+      <Card>
+        <h2 className="font-semibold">Jobs</h2>
+        <ul className="mt-2 divide-y divide-border">
+          {Object.values(JOBS).map((job) => (
+            <li key={job.id}>
+              <Link href={`/garage/${vehicle.id}/jobs/${job.id}`} className="flex items-center justify-between gap-3 py-3">
+                <div>
+                  <p className="font-medium">{job.title}</p>
+                  <p className="text-xs text-muted">{job.blurb}</p>
+                </div>
+                <Badge tone={job.tier === "green" ? "ok" : job.tier === "amber" ? "warn" : "danger"}>{job.tier}</Badge>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-xs text-muted">One job so far. The catalogue grows in Phase 4.</p>
+      </Card>
 
       {uk ? (
         <Card>
