@@ -4,7 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useVehicle } from "@/lib/garage/use-garage";
-import { engineLitres, FUEL_LABEL, SOURCE_DESCRIPTION, TRANSMISSION_LABEL, vehicleTitle } from "@/lib/vehicle/format";
+import {
+  engineLitres,
+  fieldLabel,
+  FUEL_LABEL,
+  motSummary,
+  SOURCE_DESCRIPTION,
+  TRANSMISSION_LABEL,
+  vehicleTitle,
+} from "@/lib/vehicle/format";
 import { formatRegistration } from "@/lib/vehicle/registration";
 import type { Source, Vehicle } from "@/lib/vehicle/types";
 import { FieldSource } from "./source-badge";
@@ -54,7 +62,8 @@ export function VehicleDetail({ id }: { id: string }) {
 
   const fixture = Boolean(vehicle.sources.fixture);
   const litres = engineLitres(vehicle.engineCc);
-  const uk = vehicle.uk;
+  const uk = vehicle.uk && Object.keys(vehicle.uk).length > 0 ? vehicle.uk : null;
+  const mot = motSummary(uk);
 
   async function onRemove() {
     if (!window.confirm("Remove this car from your garage?")) return;
@@ -113,7 +122,7 @@ export function VehicleDetail({ id }: { id: string }) {
             {vehicle.provenance
               .filter((p) => p.note)
               .map((p) => (
-                <li key={`${p.field}-${p.source}`}>* {p.field}: {p.note}</li>
+                <li key={`${p.field}-${p.source}`}>* {fieldLabel(p.field)}: {p.note}</li>
               ))}
           </ul>
         ) : null}
@@ -124,8 +133,7 @@ export function VehicleDetail({ id }: { id: string }) {
           <h2 className="font-semibold">UK record</h2>
           <dl className="mt-2 divide-y divide-border">
             {uk.taxStatus ? <Row label="Tax" value={uk.taxDueDate ? `${uk.taxStatus} · due ${uk.taxDueDate}` : uk.taxStatus} /> : null}
-            {uk.motStatus ? <Row label="MOT" value={uk.motExpiryDate ? `${uk.motStatus} · expires ${uk.motExpiryDate}` : uk.motStatus} /> : null}
-            {uk.motTestDueDate ? <Row label="First MOT due" value={uk.motTestDueDate} /> : null}
+            {mot ? <Row label="MOT" value={mot.long} /> : null}
             {uk.firstRegistered ? <Row label="First registered" value={uk.firstRegistered} /> : null}
             {uk.euroStatus ? <Row label="Euro status" value={uk.euroStatus} /> : null}
             {uk.co2GPerKm !== undefined ? <Row label="CO₂" value={`${uk.co2GPerKm} g/km`} /> : null}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AddVehicleFlow } from "@/components/add-vehicle-flow";
 import { DEMO_REGISTRATIONS, DEMO_VINS } from "@/lib/providers/fixtures";
-import { isDemoRegistrationLookup, lookupDepsFromEnv } from "@/lib/vehicle/lookup";
+import { lookupAvailability, lookupDepsFromEnv } from "@/lib/vehicle/lookup";
 
 export const metadata: Metadata = { title: "Add your car" };
 
@@ -9,6 +9,8 @@ export const metadata: Metadata = { title: "Add your car" };
 export const dynamic = "force-dynamic";
 
 export default function AddVehiclePage() {
-  const demo = isDemoRegistrationLookup(lookupDepsFromEnv());
-  return <AddVehicleFlow demo={demo} demoRegistrations={DEMO_REGISTRATIONS} demoVins={DEMO_VINS} />;
+  const availability = lookupAvailability(lookupDepsFromEnv());
+  return (
+    <AddVehicleFlow availability={availability} demoRegistrations={DEMO_REGISTRATIONS} demoVins={DEMO_VINS} />
+  );
 }

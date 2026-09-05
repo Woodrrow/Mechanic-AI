@@ -5,9 +5,10 @@
  * Either alone is enough for a candidate; DVSA is the only source of the model.
  * VIN path: DVSA MOT by VIN (UK-registered cars) plus NHTSA vPIC, merged the same way.
  *
- * Demo mode (no UK provider configured, or POCKET_MECHANIC_USE_FIXTURES=1)
- * serves bundled fixtures through the same code so the UI can be exercised
- * before the keys arrive.
+ * Fixtures (POCKET_MECHANIC_USE_FIXTURES=1) serve bundled sample vehicles
+ * through the same code so the UI can be exercised without keys. They are
+ * never a silent fallback: with no provider configured, registration lookup
+ * is reported as unavailable and the UI offers manual entry instead.
  */
 import { fetchVesVehicle, type VesVehicle } from "@/lib/providers/dvla-ves";
 import {
@@ -85,14 +86,31 @@ export function lookupDepsFromEnv(env: Record<string, string | undefined> = proc
   };
 }
 
-/** Fixtures are used when forced, or when no UK provider is configured at all. */
-export function isDemoRegistrationLookup(deps: LookupDeps): boolean {
-  return Boolean(deps.useFixtures) || (!deps.vesApiKey && !deps.mot);
+/** Fixtures are served only when explicitly requested. */
+export function usesFixtures(deps: LookupDeps): boolean {
+  return Boolean(deps.useFixtures);
 }
 
-/** vPIC needs no key, so the VIN path is live unless fixtures are forced. */
-export function isDemoVinLookup(deps: LookupDeps): boolean {
-  return Boolean(deps.useFixtures);
+/** What the add-vehicle screen can offer, given the configured providers. */
+export interface LookupAvailability {
+  /** Needs DVLA or DVSA credentials (or fixtures). */
+  registration: boolean;
+  /** vPIC is keyless, so VIN lookup is always on. */
+  vin: boolean;
+  fixtures: boolean;
+  dvlaVes: boolean;
+  dvsaMot: boolean;
+}
+
+export function lookupAvailability(deps: LookupDeps): LookupAvailability {
+  const fixtures = usesFixtures(deps);
+  return {
+    registration: fixtures || Boolean(deps.vesApiKey || deps.mot),
+    vin: true,
+    fixtures,
+    dvlaVes: Boolean(deps.vesApiKey),
+    dvsaMot: Boolean(deps.mot),
+  };
 }
 
 type Attempt<T> =
@@ -149,9 +167,9 @@ function report<T>(attempt: Attempt<T>): ProviderReport {
 
 function addProviderWarnings(candidate: VehicleCandidate, attempts: Array<[ProviderName, Attempt<unknown>]>): void {
   for (const [name, attempt] of attempts) {
-    if (attempt.status === "skipped") {
-      candidate.warnings.push(`${PROVIDER_LABEL[name]} was not queried (${attempt.reason}).`);
-    } else if (!attempt.result.ok) {
+    // An unconfigured provider is a deployment fact, not something the user can act on.
+    if (attempt.status === "skipped") continue;
+    if (!attempt.result.ok) {
       const e = attempt.result.error;
       if (name === "dvsa_mot" && e.kind === "not_found") {
         candidate.warnings.push("No DVSA MOT record was found for this vehicle.");
@@ -227,7 +245,14 @@ export async function lookupByRegistration(
     });
   }
 
-  const demo = isDemoRegistrationLookup(deps);
+  const demo = usesFixtures(deps);
+  if (!demo && !deps.vesApiKey && !deps.mot) {
+    return err({
+      code: "provider_misconfigured",
+      status: 503,
+      message: "Registration lookup is not available on this server yet. Type the details in instead.",
+    });
+  }
   let vesAttempt: Attempt<VesVehicle>;
   let motAttempt: Attempt<MotVehicle>;
 
@@ -290,7 +315,7 @@ export async function lookupByVin(input: string, deps: LookupDeps): Promise<Resu
     });
   }
 
-  const demo = isDemoVinLookup(deps);
+  const demo = usesFixtures(deps);
   let motAttempt: Attempt<MotVehicle>;
   let vpicAttempt: Attempt<VpicDecoded>;
 

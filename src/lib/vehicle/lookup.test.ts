@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { REGISTRATION_FIXTURES, US_FOCUS_VIN } from "@/lib/providers/fixtures";
 import {
-  isDemoRegistrationLookup,
+  lookupAvailability,
   lookupByRegistration,
   lookupByVin,
   lookupDepsFromEnv,
+  usesFixtures,
   type LookupDeps,
 } from "./lookup";
 
@@ -18,19 +19,30 @@ const json = (status: number, body: unknown) =>
 
 const demo: LookupDeps = { useFixtures: true };
 
-describe("lookupDepsFromEnv", () => {
-  it("reads keys and detects demo mode", () => {
-    expect(isDemoRegistrationLookup(lookupDepsFromEnv({}))).toBe(true);
-    expect(isDemoRegistrationLookup(lookupDepsFromEnv({ DVLA_VES_API_KEY: "k" }))).toBe(false);
-    expect(isDemoRegistrationLookup(lookupDepsFromEnv({ DVLA_VES_API_KEY: "k", POCKET_MECHANIC_USE_FIXTURES: "1" }))).toBe(true);
+describe("lookupDepsFromEnv / availability", () => {
+  it("never falls back to fixtures silently", () => {
+    expect(usesFixtures(lookupDepsFromEnv({}))).toBe(false);
+    expect(lookupAvailability(lookupDepsFromEnv({}))).toMatchObject({ registration: false, vin: true, fixtures: false });
+    expect(usesFixtures(lookupDepsFromEnv({ POCKET_MECHANIC_USE_FIXTURES: "1" }))).toBe(true);
+    expect(lookupAvailability(lookupDepsFromEnv({ POCKET_MECHANIC_USE_FIXTURES: "true" })).registration).toBe(true);
+  });
+
+  it("offers registration lookup with either UK provider", () => {
+    expect(lookupAvailability(lookupDepsFromEnv({ DVLA_VES_API_KEY: "k" }))).toMatchObject({ registration: true, dvlaVes: true, dvsaMot: false });
     const deps = lookupDepsFromEnv({
       DVSA_MOT_CLIENT_ID: "a",
       DVSA_MOT_CLIENT_SECRET: "b",
       DVSA_MOT_API_KEY: "c",
     });
     expect(deps.mot?.clientId).toBe("a");
-    expect(isDemoRegistrationLookup(deps)).toBe(false);
+    expect(lookupAvailability(deps)).toMatchObject({ registration: true, dvlaVes: false, dvsaMot: true });
     expect(lookupDepsFromEnv({ DVSA_MOT_CLIENT_ID: "a" }).mot).toBeUndefined();
+  });
+
+  it("refuses registration lookup when nothing is configured", async () => {
+    const result = await lookupByRegistration("AB15CDE", {});
+    expect(!result.ok && result.error.code).toBe("provider_misconfigured");
+    expect(!result.ok && result.error.status).toBe(503);
   });
 });
 
@@ -95,7 +107,24 @@ describe("lookupByRegistration (live)", () => {
     expect(result.value.providers.dvla_ves?.status).toBe("live");
     expect(result.value.providers.dvsa_mot?.status).toBe("skipped");
     expect(result.value.candidate.needsConfirmation).toContain("model");
-    expect(result.value.candidate.warnings.some((w) => w.includes("was not queried"))).toBe(true);
+    expect(result.value.candidate.warnings.some((w) => w.includes("not queried"))).toBe(false);
+  });
+
+  it("works from DVSA alone, which is the expected production setup while DVLA is closed", async () => {
+    const result = await lookupByRegistration("AB15CDE", {
+      mot: { clientId: "a", clientSecret: "b", apiKey: "c" },
+      fetchImpl: fakeFetch((url) => {
+        if (url.includes("login.microsoftonline.com")) return json(200, { access_token: "t", expires_in: 3600 });
+        return json(200, REGISTRATION_FIXTURES.AB15CDE.mot);
+      }),
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.candidate).toMatchObject({ make: "Ford", model: "Focus", year: 2015, engineCc: 1596, fuel: "petrol" });
+    expect(result.value.candidate.uk?.motExpiryDate).toBe("2027-02-11");
+    expect(result.value.candidate.uk?.taxStatus).toBeUndefined();
+    expect(result.value.providers.dvla_ves?.status).toBe("skipped");
+    expect(result.value.candidate.needsConfirmation).toEqual(["transmission"]);
   });
 
   it("still succeeds from DVSA alone when DVLA returns 404", async () => {

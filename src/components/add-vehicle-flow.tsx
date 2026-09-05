@@ -3,50 +3,55 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useGarage } from "@/lib/garage/use-garage";
-import type { LookupOutcome } from "@/lib/vehicle/lookup";
+import type { LookupAvailability, LookupOutcome } from "@/lib/vehicle/lookup";
 import { lookupVehicle } from "@/lib/vehicle/lookup-client";
 import type { VehicleCore } from "@/lib/vehicle/types";
 import { CandidateReview } from "./candidate-review";
 import { Disclaimer } from "./disclaimer";
+import { ManualEntryForm } from "./manual-entry-form";
 import { Button, Card } from "./ui";
 
-type Mode = "registration" | "vin";
+type Mode = "registration" | "vin" | "manual";
 
-type Step =
-  | { name: "input" }
-  | { name: "looking" }
-  | { name: "review"; outcome: LookupOutcome }
-  | { name: "saving"; outcome: LookupOutcome };
+const MODE_LABEL: Record<Mode, string> = {
+  registration: "UK registration",
+  vin: "VIN",
+  manual: "Type it in",
+};
 
 const INPUT_CLASS =
   "mt-1 w-full rounded-xl border border-border bg-background px-3 py-3 font-mono text-lg uppercase tracking-widest outline-none focus:border-accent";
 
 export function AddVehicleFlow({
-  demo,
+  availability,
   demoRegistrations,
   demoVins,
 }: {
-  demo: boolean;
+  availability: LookupAvailability;
   demoRegistrations: string[];
   demoVins: string[];
 }) {
   const router = useRouter();
   const { add } = useGarage();
-  const [mode, setMode] = useState<Mode>("registration");
+  // With no UK provider configured, typing it in is the primary path.
+  const modes: Mode[] = availability.registration ? ["registration", "vin", "manual"] : ["manual", "vin"];
+  const [mode, setMode] = useState<Mode>(modes[0]);
   const [value, setValue] = useState("");
-  const [step, setStep] = useState<Step>({ name: "input" });
+  const [looking, setLooking] = useState(false);
+  const [outcome, setOutcome] = useState<LookupOutcome | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function lookup(raw: string) {
     setError(null);
-    setStep({ name: "looking" });
+    setLooking(true);
     const response = await lookupVehicle(mode === "registration" ? { registration: raw } : { vin: raw });
+    setLooking(false);
     if (!response.ok) {
       setError(response.error.message);
-      setStep({ name: "input" });
       return;
     }
-    setStep({ name: "review", outcome: response });
+    setOutcome(response);
   }
 
   function onSubmit(event: FormEvent) {
@@ -54,35 +59,33 @@ export function AddVehicleFlow({
     if (value.trim()) void lookup(value);
   }
 
-  async function onSave(core: VehicleCore) {
-    if (step.name !== "review") return;
-    const { outcome } = step;
-    setStep({ name: "saving", outcome });
+  async function save(core: VehicleCore) {
+    setSaving(true);
+    setError(null);
     try {
       const saved = await add(core);
       router.push(`/garage/${saved.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save the vehicle.");
-      setStep({ name: "review", outcome });
+      setSaving(false);
     }
   }
 
-  if (step.name === "review" || step.name === "saving") {
+  if (outcome) {
     return (
       <CandidateReview
-        outcome={step.outcome}
-        saving={step.name === "saving"}
+        outcome={outcome}
+        saving={saving}
         error={error}
-        onSave={onSave}
+        onSave={save}
         onBack={() => {
+          setOutcome(null);
           setError(null);
-          setStep({ name: "input" });
         }}
       />
     );
   }
 
-  const looking = step.name === "looking";
   const examples = mode === "registration" ? demoRegistrations : demoVins;
 
   return (
@@ -90,18 +93,19 @@ export function AddVehicleFlow({
       <div>
         <h1 className="text-2xl font-bold">Add your car</h1>
         <p className="mt-1 text-muted">
-          UK cars: type the registration and we will fetch the official record. Anywhere else, use the VIN from the
-          windscreen or door pillar.
+          {availability.registration
+            ? "UK cars: type the registration and we will fetch the official record. Anywhere else, use the VIN or type the details in."
+            : "Type the details from your V5C logbook. Registration lookup will switch on once the DVSA record service is connected."}
         </p>
       </div>
 
-      <div role="tablist" aria-label="Lookup method" className="grid grid-cols-2 rounded-xl border border-border bg-card p-1 text-sm">
-        {(
-          [
-            ["registration", "UK registration"],
-            ["vin", "VIN"],
-          ] as const
-        ).map(([m, label]) => (
+      <div
+        role="tablist"
+        aria-label="How to add the car"
+        className="grid rounded-xl border border-border bg-card p-1 text-sm"
+        style={{ gridTemplateColumns: `repeat(${modes.length}, minmax(0, 1fr))` }}
+      >
+        {modes.map((m) => (
           <button
             key={m}
             role="tab"
@@ -113,51 +117,55 @@ export function AddVehicleFlow({
               setValue("");
               setError(null);
             }}
-            className={`rounded-lg px-3 py-2 font-semibold transition ${
+            className={`rounded-lg px-2 py-2 font-semibold transition ${
               mode === m ? "bg-accent text-accent-foreground" : "text-muted"
             }`}
           >
-            {label}
+            {MODE_LABEL[m]}
           </button>
         ))}
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-3">
-        <label className="block">
-          <span className="text-sm font-medium">{mode === "registration" ? "Registration" : "VIN"}</span>
-          <input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder={mode === "registration" ? "AB12 CDE" : "17 characters"}
-            autoCapitalize="characters"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            maxLength={mode === "registration" ? 10 : 20}
-            className={INPUT_CLASS}
-            aria-invalid={error ? true : undefined}
-          />
-          <span className="mt-1 block text-xs text-muted">
-            {mode === "registration"
-              ? "Spaces do not matter. Looked up once, never shown to anyone else."
-              : "17 letters and digits; it never contains I, O or Q."}
-          </span>
-        </label>
-        <Button type="submit" disabled={looking || !value.trim()}>
-          {looking ? "Looking up…" : "Look up"}
-        </Button>
-        {error ? (
-          <p role="alert" className="text-sm font-medium text-danger">
-            {error}
-          </p>
-        ) : null}
-      </form>
+      {mode === "manual" ? (
+        <ManualEntryForm onSave={save} saving={saving} error={error} />
+      ) : (
+        <form onSubmit={onSubmit} className="space-y-3">
+          <label className="block">
+            <span className="text-sm font-medium">{mode === "registration" ? "Registration" : "VIN"}</span>
+            <input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={mode === "registration" ? "AB12 CDE" : "17 characters"}
+              autoCapitalize="characters"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={mode === "registration" ? 10 : 20}
+              className={INPUT_CLASS}
+              aria-invalid={error ? true : undefined}
+            />
+            <span className="mt-1 block text-xs text-muted">
+              {mode === "registration"
+                ? "Spaces do not matter. Looked up once, never shown to anyone else."
+                : "17 letters and digits; it never contains I, O or Q. Best for US-market cars; UK cars decode more fully once the DVSA service is connected."}
+            </span>
+          </label>
+          <Button type="submit" disabled={looking || !value.trim()}>
+            {looking ? "Looking up…" : "Look up"}
+          </Button>
+          {error ? (
+            <p role="alert" className="text-sm font-medium text-danger">
+              {error}
+            </p>
+          ) : null}
+        </form>
+      )}
 
-      {demo ? (
+      {availability.fixtures && mode !== "manual" ? (
         <Card>
           <p className="text-sm font-semibold">Demo mode</p>
           <p className="mt-1 text-sm text-muted">
-            No DVLA or DVSA keys are configured, so lookups use bundled sample vehicles. Try one:
+            Fixtures are switched on, so lookups return bundled sample vehicles. Try one:
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {examples.map((ex) => (

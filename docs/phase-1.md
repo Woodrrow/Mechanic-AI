@@ -4,6 +4,16 @@ Scope from the brief: *"Reg-plate lookup via DVLA, VIN fallback via vPIC, vehicl
 
 This ran as an unattended session, so instead of stopping at the plan I built Phase 1 under explicit assumptions and stopped there. Every assumption below is cheap to reverse; tell me which ones you want changed before Phase 2.
 
+## Update, 5 September: keys
+
+- **DVLA VES is not accepting new registrations.** The client stays in the codebase and switches on if a key ever arrives, but nothing depends on it.
+- **DVSA MOT History is pending** (up to five working days). It is now the primary source, and it is sufficient: it carries make, model, colour, engine size, fuel, registration and manufacture dates, recall flag and the full test history. Without DVLA we lose only tax status, DVLA's own MOT flag (the app derives MOT validity from the latest DVSA pass instead), CO2, Euro status and wheelplan. None of those matter to the product.
+- **Manual entry added.** A V5C-guided form (make, model, year, engine size, fuel, gearbox, colour, optional registration and VIN) that produces the same `Vehicle` with every field's provenance marked "You". It is the first tab when no lookup provider is configured, and a fallback otherwise, so the garage is never blocked on a government service.
+- **Fixtures are no longer a silent default.** They appear only with `POCKET_MECHANIC_USE_FIXTURES=1`. A deployed app with no keys now offers manual entry rather than showing sample cars to real users.
+- **Unconfigured providers no longer nag.** A skipped provider is a deployment fact and is left out of the user-facing warnings and source chips; it remains in the API's `providers` report and the verify script.
+
+The action for you is unchanged: when the DVSA credentials arrive, put them in `.env.local` and run `npm run verify:apis -- --reg "<your plate>"`. Registration lookup switches on with no code change.
+
 ## What is built
 
 - **Lookup by UK registration** (`POST /api/vehicles/lookup`): DVLA VES and DVSA MOT History queried in parallel, merged into one candidate with per-field provenance. Either source alone is enough; DVSA is the only source of the model name.

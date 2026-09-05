@@ -1,4 +1,4 @@
-import type { FuelType, Source, Transmission, VehicleCore } from "./types";
+import type { FuelType, Source, Transmission, UkVehicleDetails, VehicleCore } from "./types";
 
 export const FUEL_LABEL: Record<FuelType, string> = {
   petrol: "Petrol",
@@ -47,4 +47,59 @@ export function engineSummary(v: Pick<VehicleCore, "engineCc" | "fuel" | "transm
   if (v.fuel !== "unknown") parts.push(FUEL_LABEL[v.fuel]);
   if (v.transmission !== "unknown") parts.push(TRANSMISSION_LABEL[v.transmission]);
   return parts.join(" · ");
+}
+
+export interface StatusSummary {
+  short: string;
+  long: string;
+  tone: "ok" | "warn" | "neutral";
+}
+
+/**
+ * MOT status from whatever is available: DVLA's status flag when we have it,
+ * otherwise the DVSA test history (latest pass expiry, or the first-test due date).
+ */
+export function motSummary(uk: UkVehicleDetails | null | undefined, today: Date = new Date()): StatusSummary | null {
+  if (!uk) return null;
+  if (uk.motTestDueDate) {
+    return { short: `First MOT due ${uk.motTestDueDate}`, long: `Not yet due · first test by ${uk.motTestDueDate}`, tone: "neutral" };
+  }
+  if (uk.motStatus) {
+    const s = uk.motStatus.toLowerCase();
+    const tone = s.includes("not valid") || s.includes("expired") ? "warn" : s.includes("valid") ? "ok" : "neutral";
+    return {
+      short: `MOT ${uk.motStatus}`,
+      long: uk.motExpiryDate ? `${uk.motStatus} · expires ${uk.motExpiryDate}` : uk.motStatus,
+      tone,
+    };
+  }
+  if (uk.motExpiryDate) {
+    const expired = uk.motExpiryDate < today.toISOString().slice(0, 10);
+    return expired
+      ? { short: "MOT expired", long: `Expired ${uk.motExpiryDate}`, tone: "warn" }
+      : { short: "MOT valid", long: `Valid · expires ${uk.motExpiryDate}`, tone: "ok" };
+  }
+  return null;
+}
+
+export function taxTone(status: string): StatusSummary["tone"] {
+  const s = status.toLowerCase();
+  if (s.includes("untaxed") || s.includes("not taxed") || s.includes("sorn")) return "warn";
+  if (s.includes("taxed")) return "ok";
+  return "neutral";
+}
+
+/** Display names for the fields that carry provenance. */
+export const FIELD_LABEL: Record<string, string> = {
+  make: "Make",
+  model: "Model",
+  year: "Year",
+  engineCc: "Engine",
+  fuel: "Fuel",
+  transmission: "Gearbox",
+  colour: "Colour",
+};
+
+export function fieldLabel(field: string): string {
+  return FIELD_LABEL[field] ?? field;
 }

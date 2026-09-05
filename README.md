@@ -11,7 +11,7 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-With no API keys configured the app runs in **demo mode**: lookups are served from bundled fixtures that mirror the real DVLA and DVSA response shapes. Try `AB15 CDE`, `LK66 YHC`, `LP24 ABC`, `AA19 AAA` or `ER19 NFD`.
+With no API keys configured, users add a car by typing the details from the V5C logbook. Registration lookup switches on automatically once DVSA (or DVLA) credentials are present. To exercise the lookup UI without keys, run with `POCKET_MECHANIC_USE_FIXTURES=1`: lookups then return bundled sample vehicles shaped like the real DVLA and DVSA responses. Try `AB15 CDE`, `LK66 YHC`, `LP24 ABC`, `AA19 AAA` or `ER19 NFD`.
 
 Other commands:
 
@@ -29,8 +29,9 @@ Copy `.env.example` to `.env.local` and fill in what you have. Every provider is
 
 | Provider | What it gives us | How to get access |
 | --- | --- | --- |
-| DVLA Vehicle Enquiry Service | make, year, engine cc, fuel, colour, tax and MOT status. **Not the model.** | [Register for VES](https://register-for-ves.driver-vehicle-licensing.api.gov.uk/). One key per organisation. A UAT key and host exist for testing. |
-| DVSA MOT History API | make, **model**, colour, engine cc, fuel, registration and manufacture dates, full MOT test history with advisories | [Register for the MOT history API](https://documentation.history.mot.api.gov.uk/mot-history-api/register). You receive a client ID, client secret, API key, token URL and scope. |
+| DVSA MOT History API (**primary**) | make, **model**, colour, engine cc, fuel, registration and manufacture dates, full MOT test history with advisories | [Register for the MOT history API](https://documentation.history.mot.api.gov.uk/mot-history-api/register). Up to five working days. You receive a client ID, client secret, API key, token URL and scope. |
+| DVLA Vehicle Enquiry Service (optional) | tax status, DVLA's MOT flag, CO2, Euro status, plus make, year, engine cc, fuel and colour. Not the model. | [Register for VES](https://register-for-ves.driver-vehicle-licensing.api.gov.uk/). **Closed to new registrations as of September 2026.** The client is built and switches on if a key ever arrives. |
+| Manual entry | whatever the user copies from the V5C | Always available. Used automatically when no lookup provider is configured, and offered as a fallback otherwise. |
 | NHTSA vPIC | VIN decoding, strongest for US-market cars | No key. |
 | Supabase (optional) | Postgres + auth so the garage syncs across devices | Free project. Enable **Anonymous sign-ins** under Authentication, then run `supabase/migrations/*.sql` in the SQL editor. Without it, the garage lives in the browser's localStorage. |
 

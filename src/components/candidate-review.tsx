@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { engineLitres, FUEL_LABEL } from "@/lib/vehicle/format";
+import { engineLitres, FUEL_LABEL, motSummary } from "@/lib/vehicle/format";
 import type { LookupOutcome } from "@/lib/vehicle/lookup";
 import { titleCase } from "@/lib/vehicle/normalise";
 import { formatRegistration } from "@/lib/vehicle/registration";
@@ -83,6 +83,7 @@ export function CandidateReview({
   }
 
   const litres = engineLitres(candidate.engineCc);
+  const mot = motSummary(candidate.uk);
   const headline = [yearValue ?? candidate.year, candidate.make, modelValue ?? candidate.model].filter(Boolean).join(" ");
 
   const rows: Array<{ label: string; value: string | null; field: string }> = [
@@ -122,14 +123,9 @@ export function CandidateReview({
             </div>
           ))}
         </dl>
-        {candidate.uk?.motStatus || candidate.uk?.taxStatus ? (
+        {mot || candidate.uk?.taxStatus ? (
           <p className="mt-3 text-xs text-muted">
-            {[
-              candidate.uk.motStatus ? `MOT: ${candidate.uk.motStatus}` : null,
-              candidate.uk.motExpiryDate ? `expires ${candidate.uk.motExpiryDate}` : null,
-              candidate.uk.motTestDueDate ? `first MOT due ${candidate.uk.motTestDueDate}` : null,
-              candidate.uk.taxStatus ? `Tax: ${candidate.uk.taxStatus}` : null,
-            ]
+            {[mot ? `MOT: ${mot.long}` : null, candidate.uk?.taxStatus ? `Tax: ${candidate.uk.taxStatus}` : null]
               .filter(Boolean)
               .join(" · ")}
           </p>
