@@ -2,7 +2,14 @@
 
 A mobile-first PWA that helps UK car owners diagnose and repair their own cars at home. Built on free tiers only.
 
-**Status: Phase 4 (catalogue and platform siblings).** Add a car by UK registration, VIN, or by typing in the V5C details; see exactly what the free public records say about it; read its MOT history in plain English with what has probably worsened since; and work through a catalogue of 30 jobs rated green, amber or red. Guides are vehicle-specific and safety-gated, generated offline with a local Ollama model, checked automatically for invented figures, and shown only after a person has reviewed them. Red jobs are refused with reasons and a price for professional work. When no guide exists for your exact car, one written for a platform sibling is offered with both cars named. See [`docs/phase-1.md`](docs/phase-1.md) through [`docs/phase-4.md`](docs/phase-4.md).
+**Status: all five phases of the MVP are built.**
+
+- **My Garage** — add a car by UK registration, VIN, or by typing in the V5C details, and see exactly what the free public records say about it and where each fact came from.
+- **Your car's history** — its MOT record in plain English, what has probably worsened since, and a suggested job for each item.
+- **Job guides** — a catalogue of 30 jobs rated green, amber or red. Guides are vehicle-specific and safety-gated, generated offline with a local Ollama model, checked automatically for invented figures, and shown only after a person has reviewed them. Red jobs are refused with reasons and a price for professional work. When no guide exists for your exact car, one written for a platform sibling is offered with both cars named.
+- **Diagnose** — describe a symptom, answer a short interview, get ranked causes with costs, your own MOT record as evidence, and links to the guides. Paste OBD-II fault codes and they are decoded from the bundled SAE J2012 data.
+
+Nothing calls a language model at request time, so the running cost is zero. See [`docs/phase-1.md`](docs/phase-1.md) through [`docs/phase-5.md`](docs/phase-5.md) for the plans, decisions and open questions.
 
 ## Run it
 
@@ -60,12 +67,13 @@ Push to GitHub, import into Vercel (Hobby tier), add the environment variables f
 ## Layout
 
 ```
-src/app/                      routes: / (garage), /garage/add, /garage/[id], /garage/[id]/history, /garage/[id]/jobs, /garage/[id]/jobs/[jobId], /api/vehicles/lookup, /api/guides, /api/jobs, /api/videos, PWA manifest + icons
+src/app/                      routes: / (garage), /garage/add, /garage/[id], /garage/[id]/history, /garage/[id]/jobs, /garage/[id]/jobs/[jobId], /garage/[id]/diagnose, /api/vehicles/lookup, /api/guides, /api/jobs, /api/videos, /api/diagnose, PWA manifest + icons
 src/components/               UI (all client components are marked "use client")
 src/lib/vehicle/              canonical Vehicle model, plate/VIN validation, manual entry, merge + provenance, lookup orchestration
 src/lib/mot/                  MOT defect parsing, plain-English rule library, history analysis, refresh merge
 src/lib/jobs/                 job catalogue, guide schema, figure spec-check, prompts, grounding, matching, file store
 src/lib/platforms/            shared-platform table and the sibling matcher
+src/lib/diagnose/             symptom library, cause library, ranking engine, OBD-II decoding and bundled J2012 codes
 src/lib/llm/                  StructuredModel interface, Ollama client, fixture model
 src/lib/video/                YouTube search client
 data/guides/                  the guide cache (JSON, one per job + vehicle scope), reviewed or draft

@@ -5,9 +5,10 @@
 Mobile-first PWA that helps UK car owners diagnose and repair their own cars. Zero budget: free tiers only.
 
 - Stack: Next.js 16 (App Router, Turbopack), React 19, TypeScript strict, Tailwind v4, Supabase (optional), Vitest.
-- Build order is phased. Do not build beyond the current phase. Phases 1 to 4 are done: see `docs/phase-1.md` through `docs/phase-4.md`. Next is Phase 5 (Diagnose by symptom, plus optional OBD-II code input).
+- All five phases of the original brief are done: see `docs/phase-1.md` through `docs/phase-5.md`. Anything further is new scope; agree it before building.
 - Job catalogue lives in `src/lib/jobs/catalogue.ts`; RED jobs must always carry a `refusal` and never a procedure. Platform siblings come from `src/lib/platforms/table.ts`, and any substitution must be shown to the user with both cars named.
 - Job guides: generated offline with Ollama (`npm run guide:generate`), stored as JSON in `data/guides/`, shown only when `status: "reviewed"`. `src/lib/jobs/spec-check.ts` blocks unsourced torque, capacity and part-number figures; keep it that way. The deployed app never calls a model.
+- Diagnose is deterministic: symptoms, causes and answer weights are hand-written in `src/lib/diagnose/`, and the app never calls a model at request time. OBD-II codes are decoded from the bundled SAE J2012 data; never guess at a manufacturer-specific code.
 - MOT plain-English text lives in `src/lib/mot/knowledge.ts` as hand-written rules. Extend it from real advisory text, never with generated explanations, and never state torque, capacity or part-number figures.
 - Vehicle data comes only from free public APIs (DVLA VES, DVSA MOT History, NHTSA vPIC). Never scrape, never assume paid data.
 - Safety rules from the product brief are non-negotiable: never invent torque figures, capacities or part numbers.

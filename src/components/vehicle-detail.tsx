@@ -132,6 +132,10 @@ export function VehicleDetail({ id }: { id: string }) {
         Your car&apos;s history{uk?.motTestCount ? ` · ${uk.motTestCount} MOT tests` : ""}
       </ButtonLink>
 
+      <ButtonLink href={`/garage/${vehicle.id}/diagnose`} variant="secondary">
+        Something is wrong: diagnose it
+      </ButtonLink>
+
       <ButtonLink href={`/garage/${vehicle.id}/jobs`} variant="secondary">
         Jobs you can do on this car
       </ButtonLink>
