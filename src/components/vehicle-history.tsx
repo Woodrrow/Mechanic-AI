@@ -16,7 +16,7 @@ import {
   type ResolvedItem,
 } from "@/lib/mot/types";
 import { MotVehicleSchema } from "@/lib/providers/dvsa-mot";
-import { jobForRule } from "@/lib/jobs/catalogue";
+import { jobForDefect } from "@/lib/jobs/catalogue";
 import { motSummary, vehicleTitle } from "@/lib/vehicle/format";
 import { lookupVehicle } from "@/lib/vehicle/lookup-client";
 import { formatRegistration } from "@/lib/vehicle/registration";
@@ -87,7 +87,7 @@ function OpenItemCard({ item, vehicleId }: { item: OpenItem; vehicleId: string }
   const { defect } = item;
   const { explanation } = defect;
   const job = explanation.job;
-  const catalogueJob = jobForRule(explanation.ruleId);
+  const catalogueJob = jobForDefect(explanation.ruleId, defect.location);
   return (
     <Card>
       <div className="flex flex-wrap items-center gap-2">

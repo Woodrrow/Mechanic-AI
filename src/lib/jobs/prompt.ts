@@ -3,6 +3,7 @@
  * brief, extended with the output contract. Kept as plain strings so they can
  * be diffed and reviewed like any other safety-relevant text.
  */
+import { DIAGRAM_LABELS } from "./diagrams";
 import type { Grounding } from "./grounding";
 import type { JobDefinition } from "./types";
 
@@ -44,5 +45,14 @@ Typical time: ${job.typicalTimeMinutes.min} to ${job.typicalTimeMinutes.max} min
 STANDARD TOOL LIST (already shown to the reader; list only additions in toolsExtra)
 ${tools}
 
-Write the guide for this exact car. Include the model-specific details a good mechanic would mention: unusual fasteners, wear-sensor wiring, how the caliper is retained, things that commonly go wrong on this generation. Where you are unsure whether a detail applies to this exact variant, say so in the step and in notesForReviewer rather than guessing.`;
+${job.promptNotes && job.promptNotes.length ? `JOB-SPECIFIC NOTES
+${job.promptNotes.map((n) => `- ${n}`).join("\n")}
+
+` : ""}${diagramSection(job)}Write the guide for this exact car. Include the model-specific details a good mechanic would mention: unusual fasteners, sensor wiring, how parts are retained, things that commonly go wrong on this generation. Where you are unsure whether a detail applies to this exact variant, say so in the step and in notesForReviewer rather than guessing.`;
+}
+
+function diagramSection(job: JobDefinition): string {
+  if (!job.diagram) return "DIAGRAM\nThis job has no diagram; return an empty object for diagramLabels.\n\n";
+  const lines = Object.entries(DIAGRAM_LABELS[job.diagram]).map(([key, meaning]) => `- ${key}: ${meaning}`);
+  return `DIAGRAM (${job.diagram})\nThe reader sees a schematic with these numbered parts. For each key, give a short label specific to this car, or null to keep the default:\n${lines.join("\n")}\n\n`;
 }

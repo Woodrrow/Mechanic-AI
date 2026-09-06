@@ -6,6 +6,26 @@ export function normaliseModelName(model: string | null | undefined): string {
   return (model ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
+export function modelTokens(model: string | null | undefined): string[] {
+  return (model ?? "")
+    .toUpperCase()
+    .replace(/'/g, "")
+    .split(/[^A-Z0-9]+/)
+    .filter(Boolean);
+}
+
+/**
+ * DVSA model strings usually carry trim and engine ("FOCUS ZETEC TDCI",
+ * "C-MAX TITANIUM"), so a guide written for "FOCUS" must match them. The
+ * guide's model tokens must be a prefix of the vehicle's.
+ */
+export function modelMatches(scopeModel: string, vehicleModel: string | null | undefined): boolean {
+  const scope = modelTokens(scopeModel);
+  const vehicle = modelTokens(vehicleModel);
+  if (scope.length === 0 || vehicle.length < scope.length) return false;
+  return scope.every((token, i) => vehicle[i] === token);
+}
+
 export interface GuideLookup {
   jobId: string;
   makeRaw: string;
@@ -29,7 +49,7 @@ export function lookupFromVehicle(vehicle: VehicleCore, jobId: string): GuideLoo
 export function guideMatches(guide: GuideRecord, lookup: GuideLookup): boolean {
   if (guide.jobId !== lookup.jobId) return false;
   if (guide.scope.makeRaw.toUpperCase() !== lookup.makeRaw.toUpperCase()) return false;
-  if (normaliseModelName(guide.scope.modelRaw) !== normaliseModelName(lookup.model)) return false;
+  if (!modelMatches(guide.scope.modelRaw, lookup.model)) return false;
   if (lookup.year === null || lookup.year < guide.scope.yearFrom || lookup.year > guide.scope.yearTo) return false;
   if (guide.scope.engineCc !== null && guide.scope.engineCc !== lookup.engineCc) return false;
   if (guide.scope.fuel !== lookup.fuel) return false;

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "id": "wiper-blades__volkswagen__golf__2012-2020__any__diesel",
+  "jobId": "wiper-blades",
+  "scope": {
+    "makeRaw": "VOLKSWAGEN",
+    "modelRaw": "GOLF",
+    "yearFrom": 2012,
+    "yearTo": 2020,
+    "engineCc": null,
+    "fuel": "diesel",
+    "variantNotes": "Golf Mk7 and Mk7.5 hatchback and estate. The rear blade on the estate is a different fitting from the hatchback."
+  },
+  "content": {
+    "summary": "Wiper blades are the rubber strips that sweep the screen. The rubber hardens with age and stops clearing water, which is an MOT failure and genuinely dangerous at night in the rain. Replacing them takes five minutes and no tools.",
+    "partLocation": "Standing at the front of the car facing the windscreen, the two wiper arms rest at the bottom of the screen. On this Golf they park almost flat against the scuttle panel, so the arms have to be lifted before the blades come off. Some Mk7s need the ignition switched to service position first, or the arms hit the bonnet.",
+    "difficulty": 1,
+    "timeMinutes": { "min": 5, "max": 15 },
+    "toolsExtra": [],
+    "partsNeeded": [
+      {
+        "name": "Front wiper blade set for this car",
+        "notes": "The driver's side and passenger's side blades are different lengths. Buy by registration or use the shop's lookup; the lengths are in the handbook."
+      },
+      { "name": "Rear wiper blade, if fitted", "notes": "Hatchback and estate use different rear blades." }
+    ],
+    "steps": [
+      {
+        "title": "Park the wipers where you can reach them",
+        "instruction": "If the arms sit tucked under the bonnet lip, switch the ignition on, flick the wipers once and switch the ignition off part-way through the sweep so the arms stop upright. On many Mk7s there is a service position: with the ignition off, pull the wiper stalk down once within a few seconds and the arms move up the screen.",
+        "caution": null,
+        "checkpoint": "The wiper arms lift away from the screen without fouling the bonnet."
+      },
+      {
+        "title": "Protect the glass",
+        "instruction": "Lift an arm away from the screen until it locks upright, then lay a folded towel on the glass underneath it.",
+        "caution": "A wiper arm that springs back onto bare glass can crack the windscreen. Never let go of a bare arm.",
+        "checkpoint": null
+      },
+      {
+        "title": "Release the old blade",
+        "instruction": "Look at the joint where the blade meets the arm. Most Mk7 Golfs use a push-tab fitting: press the tab in the middle of the connector and slide the blade down the arm. Others use a hook end, where the blade pivots and unhooks.",
+        "caution": null,
+        "checkpoint": "You can see how the old blade was attached. Photograph it if you are unsure."
+      },
+      {
+        "title": "Fit the new blade",
+        "instruction": "Slide the new blade on in the reverse order until the tab clicks. Give it a gentle tug; it should not come off.",
+        "caution": null,
+        "checkpoint": "The blade is locked on and sits flat along the arm, not twisted."
+      },
+      {
+        "title": "Lower the arm and repeat",
+        "instruction": "Hold the arm and lower it gently onto the glass. Do the other side, remembering the two blades are different lengths.",
+        "caution": null,
+        "checkpoint": null
+      },
+      {
+        "title": "Test them",
+        "instruction": "Wet the screen with the washers first, then run the wipers through a full sweep on each speed.",
+        "caution": "Never run wipers on a dry screen: it tears the new rubber and scratches the glass.",
+        "checkpoint": "The screen clears in one pass with no streaks, smears or juddering, and the blades do not touch each other or overrun the edge of the glass."
+      }
+    ],
+    "figures": [
+      {
+        "name": "Front blade lengths",
+        "unit": "mm",
+        "value": null,
+        "source": null,
+        "note": "In the handbook, or from the parts shop's registration lookup. The two sides are different lengths on this car."
+      }
+    ],
+    "gotchas": [
+      "The driver's and passenger's blades are not the same length. Fitting them the wrong way round makes them clash or leave a large unswept area.",
+      "If the arms will not lift far enough, you have not found the service position. Forcing them bends the arm.",
+      "Streaking that continues with new blades usually means a dirty screen or wax on the glass, not a bad blade. Clean the glass properly and try again.",
+      "Judder often means the arm is slightly twisted or the blade is fitted at an angle rather than a fault with the new blade."
+    ],
+    "verification": [
+      "One full sweep clears the wet screen with no streaks left behind.",
+      "The blades sit flat on the glass at rest and do not touch each other at any point in the sweep.",
+      "Nothing rattles or judders at either speed."
+    ],
+    "ifWrong": [
+      "Streaks in the same place every sweep: clean the glass with a proper glass cleaner and check the blade is seated flat.",
+      "The blade lifts off the screen at speed: the arm's spring is weak, which is an arm replacement, not a blade.",
+      "The wipers do not park properly afterwards: the arm has been moved on its spline. Stop and have it reset."
+    ],
+    "diagramLabels": {},
+    "videoQuery": "VW Golf Mk7 wiper blade replacement service position",
+    "confidence": "medium",
+    "notesForReviewer": "Hand-written reference guide. Verify on the car: whether this Mk7 uses the push-tab or hook fitting, and the exact service-position procedure for the model year."
+  },
+  "status": "reviewed",
+  "specCheck": { "ok": true, "violations": [] },
+  "generatedBy": { "provider": "author", "model": "hand-written reference guide", "durationMs": null, "promptTokens": null, "completionTokens": null },
+  "grounding": [
+    "Make: VOLKSWAGEN",
+    "Model: GOLF",
+    "Year of manufacture: 2016",
+    "Engine capacity: 1968 cc (2.0 litre)",
+    "Fuel: diesel",
+    "Job: Wiper blades (wiper-blades), safety tier GREEN",
+    "Torque figures, fluid capacities and part numbers available: none. Every figure must be listed with value null."
+  ],
+  "generatedAt": "2026-09-06T09:00:00.000Z",
+  "reviewedAt": "2026-09-06T09:00:00.000Z",
+  "reviewedBy": "author (reference guide; re-check on the car before relying on it)",
+  "version": 1
+}

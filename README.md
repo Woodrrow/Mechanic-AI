@@ -2,7 +2,7 @@
 
 A mobile-first PWA that helps UK car owners diagnose and repair their own cars at home. Built on free tiers only.
 
-**Status: Phase 3 (Job Guide).** Add a car by UK registration, VIN, or by typing in the V5C details; see exactly what the free public records say about it; read its MOT history in plain English with what has probably worsened since; and open a vehicle-specific, safety-gated guide for the first job, front brake pads. Guides are generated offline with a local Ollama model, checked automatically for invented figures, and shown only after a person has reviewed them. See [`docs/phase-1.md`](docs/phase-1.md), [`docs/phase-2.md`](docs/phase-2.md) and [`docs/phase-3.md`](docs/phase-3.md).
+**Status: Phase 4 (catalogue and platform siblings).** Add a car by UK registration, VIN, or by typing in the V5C details; see exactly what the free public records say about it; read its MOT history in plain English with what has probably worsened since; and work through a catalogue of 30 jobs rated green, amber or red. Guides are vehicle-specific and safety-gated, generated offline with a local Ollama model, checked automatically for invented figures, and shown only after a person has reviewed them. Red jobs are refused with reasons and a price for professional work. When no guide exists for your exact car, one written for a platform sibling is offered with both cars named. See [`docs/phase-1.md`](docs/phase-1.md) through [`docs/phase-4.md`](docs/phase-4.md).
 
 ## Run it
 
@@ -60,11 +60,12 @@ Push to GitHub, import into Vercel (Hobby tier), add the environment variables f
 ## Layout
 
 ```
-src/app/                      routes: / (garage), /garage/add, /garage/[id], /garage/[id]/history, /garage/[id]/jobs/[jobId], /api/vehicles/lookup, /api/guides, /api/videos, PWA manifest + icons
+src/app/                      routes: / (garage), /garage/add, /garage/[id], /garage/[id]/history, /garage/[id]/jobs, /garage/[id]/jobs/[jobId], /api/vehicles/lookup, /api/guides, /api/jobs, /api/videos, PWA manifest + icons
 src/components/               UI (all client components are marked "use client")
 src/lib/vehicle/              canonical Vehicle model, plate/VIN validation, manual entry, merge + provenance, lookup orchestration
 src/lib/mot/                  MOT defect parsing, plain-English rule library, history analysis, refresh merge
 src/lib/jobs/                 job catalogue, guide schema, figure spec-check, prompts, grounding, matching, file store
+src/lib/platforms/            shared-platform table and the sibling matcher
 src/lib/llm/                  StructuredModel interface, Ollama client, fixture model
 src/lib/video/                YouTube search client
 data/guides/                  the guide cache (JSON, one per job + vehicle scope), reviewed or draft

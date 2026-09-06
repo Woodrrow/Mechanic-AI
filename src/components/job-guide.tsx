@@ -10,8 +10,10 @@ import { analyseHistory } from "@/lib/mot/history";
 import { MotVehicleSchema } from "@/lib/providers/dvsa-mot";
 import { engineLitres, FUEL_LABEL, vehicleTitle } from "@/lib/vehicle/format";
 import type { Vehicle } from "@/lib/vehicle/types";
-import { DiscBrakeCorner } from "./diagrams/disc-brake-corner";
+import { Diagram } from "./diagrams";
+import { JobRefusal } from "./job-refusal";
 import { JobSafetyGate } from "./job-safety-gate";
+import { SiblingBanner } from "./sibling-banner";
 import { Badge, Card, Plate } from "./ui";
 import { VideoEmbed } from "./video-embed";
 import { formatRegistration } from "@/lib/vehicle/registration";
@@ -92,7 +94,7 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
   if (!response) return <p className="text-muted">Loading the guide…</p>;
   if (!response.ok) return <p role="alert" className="text-danger">{response.error.message}</p>;
 
-  const { job, guide } = response;
+  const { job, guide, kind } = response;
   const title = vehicleTitle(vehicle) || "your car";
   const advisories = relevantAdvisories(analysis, job);
   const tier = TIER[job.tier];
@@ -113,6 +115,32 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
     </div>
   );
 
+  if (kind === "refer_out") {
+    return (
+      <div className="space-y-5">
+        {header}
+        <JobRefusal job={job} vehicleId={vehicle.id} />
+      </div>
+    );
+  }
+
+  if (kind === "not_applicable") {
+    return (
+      <div className="space-y-5">
+        {header}
+        <Card>
+          <p className="font-semibold">This job does not apply to your car</p>
+          <p className="mt-1 text-sm text-muted">
+            {job.title} is not a job on a {FUEL_LABEL[vehicle.fuel].toLowerCase()} car.
+          </p>
+          <Link href={`/garage/${vehicle.id}/jobs`} className="mt-3 inline-block text-sm font-semibold text-accent">
+            ← Back to all jobs
+          </Link>
+        </Card>
+      </div>
+    );
+  }
+
   if (!guide) {
     return (
       <div className="space-y-5">
@@ -120,9 +148,9 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
         <Card>
           <p className="font-semibold">No guide yet for your exact car</p>
           <p className="mt-1 text-sm text-muted">
-            {response.reason === "vehicle_incomplete"
+            {kind === "vehicle_incomplete"
               ? "We need the model and year to match a guide. Add them on the vehicle page."
-              : `Guides are written for a specific model, year range and engine, generated offline and checked by a person before they are shown. There is no reviewed guide for a ${title} yet.`}
+              : `Guides are written for a specific model, year range and engine, generated offline and checked by a person before they are shown. There is no reviewed guide for a ${title}, or for a car that shares its platform, yet.`}
           </p>
           <p className="mt-3 text-xs text-muted">
             The generic safety rules and tool list for this job are below so you can plan, but there are no steps until a guide for your car exists.
@@ -142,10 +170,19 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
     );
   }
 
+  const siblingBanner =
+    kind === "sibling" && response.sibling ? (
+      <SiblingBanner
+        sibling={{ ...response.sibling, scopeYears: `${guide.scope.yearFrom} to ${guide.scope.yearTo}` }}
+        vehicleTitle={title}
+      />
+    ) : null;
+
   if (!acknowledged) {
     return (
       <div className="space-y-5">
         {header}
+        {siblingBanner}
         <JobSafetyGate job={job} onAcknowledge={() => setAcknowledged(true)} />
       </div>
     );
@@ -155,6 +192,7 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
   return (
     <div className="space-y-5">
       {header}
+      {siblingBanner}
 
       <Card>
         <div className="flex flex-wrap items-center gap-2">
@@ -233,7 +271,7 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
         <Card>
           <p className="text-sm">{c.partLocation}</p>
         </Card>
-        <DiscBrakeCorner labels={c.diagramLabels} />
+        {job.diagram ? <Diagram id={job.diagram} labels={c.diagramLabels} /> : null}
       </section>
 
       <section className="space-y-3">
@@ -263,7 +301,7 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
 
       {c.gotchas.length > 0 ? (
         <Card className="border-warn/40 bg-warn-bg">
-          <h2 className="font-semibold text-warn">Gotchas on this car</h2>
+          <h2 className="font-semibold text-warn">Gotchas</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
             {c.gotchas.map((g) => (
               <li key={g}>{g}</li>
@@ -294,7 +332,9 @@ export function JobGuide({ vehicleId, jobId }: { vehicleId: string; jobId: strin
 
       <Card>
         <p className="text-xs text-muted">
-          Guide {guide.id} v{guide.version}, {guide.generatedBy.provider === "author" ? "written by hand" : `generated with ${guide.generatedBy.model}`} on{" "}
+          Written for the {guide.scope.yearFrom}–{guide.scope.yearTo} {guide.scope.makeRaw} {guide.scope.modelRaw}
+          {guide.scope.engineCc ? ` ${guide.scope.engineCc}cc` : ""} {guide.scope.fuel}. Guide {guide.id} v{guide.version},{" "}
+          {guide.generatedBy.provider === "author" ? "written by hand" : `generated with ${guide.generatedBy.model}`} on{" "}
           {guide.generatedAt.slice(0, 10)}
           {guide.reviewedAt ? `, reviewed ${guide.reviewedAt.slice(0, 10)} by ${guide.reviewedBy}` : ""}. Confidence: {c.confidence}.
           Grounded on: {guide.grounding.slice(0, 5).join("; ")}.

@@ -4,8 +4,9 @@
  */
 import type { StructuredModel } from "@/lib/llm/types";
 import type { VehicleCore } from "@/lib/vehicle/types";
+import { isGuideable, jobAppliesToFuel } from "./catalogue";
 import { buildGrounding } from "./grounding";
-import { ModelGuideOutputSchema, modelOutputJsonSchema, type GuideRecord } from "./guide-schema";
+import { modelOutputJsonSchema, modelOutputSchemaFor, type GuideRecord } from "./guide-schema";
 import { guideFileName } from "./match";
 import { buildUserPrompt, SYSTEM_PROMPT } from "./prompt";
 import { checkGuide } from "./spec-check";
@@ -22,12 +23,18 @@ export async function generateGuide(
   model: StructuredModel,
   opts: GenerateOptions = {},
 ): Promise<{ record: GuideRecord; fileName: string }> {
+  if (!isGuideable(job)) {
+    throw new Error(`"${job.title}" is a RED job: the app refers it out and never generates a procedure for it.`);
+  }
+  if (!jobAppliesToFuel(job, vehicle.fuel)) {
+    throw new Error(`"${job.title}" does not apply to a ${vehicle.fuel} car.`);
+  }
   const grounding = buildGrounding(vehicle, job);
   const result = await model.generate({
     system: SYSTEM_PROMPT,
     prompt: buildUserPrompt(job, grounding),
-    schema: ModelGuideOutputSchema,
-    jsonSchema: modelOutputJsonSchema(),
+    schema: modelOutputSchemaFor(job),
+    jsonSchema: modelOutputJsonSchema(job),
   });
   const output = result.value;
   const specCheck = checkGuide(output, { allowedNumbers: grounding.allowedNumbers, groundedFigures: grounding.groundedFigures });

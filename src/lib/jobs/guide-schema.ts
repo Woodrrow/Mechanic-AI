@@ -4,6 +4,8 @@
  * it with provenance, review status and the spec-check result for storage.
  */
 import { z } from "zod";
+import { DIAGRAM_LABELS, diagramLabelKeys } from "./diagrams";
+import type { JobDefinition } from "./types";
 
 const FuelEnum = z.enum(["petrol", "diesel", "hybrid", "plug_in_hybrid", "electric", "other", "unknown"]);
 
@@ -38,15 +40,17 @@ export const GuideFigureSchema = z.object({
   note: z.string().min(1).describe("Where the reader can find the figure themselves"),
 });
 
-export const DiagramLabelsSchema = z.object({
-  caliper: z.string().nullable(),
-  carrier: z.string().nullable(),
-  pads: z.string().nullable(),
-  disc: z.string().nullable(),
-  guidePins: z.string().nullable(),
-  bleedNipple: z.string().nullable(),
-  hub: z.string().nullable(),
-});
+/** Stored form: any diagram's labels. The per-job model schema is stricter. */
+export const DiagramLabelsSchema = z.record(z.string(), z.string().nullable());
+
+function diagramLabelsSchemaFor(job: JobDefinition) {
+  if (!job.diagram) return z.object({});
+  const shape: Record<string, z.ZodType> = {};
+  for (const key of diagramLabelKeys(job.diagram)) {
+    shape[key] = z.string().nullable().describe(`Label for: ${DIAGRAM_LABELS[job.diagram][key]}. Null to keep the default wording.`);
+  }
+  return z.object(shape);
+}
 
 export const GuideContentSchema = z.object({
   summary: z.string().min(1).describe("What the part does and what the job involves, for someone who has never done it"),
@@ -55,7 +59,7 @@ export const GuideContentSchema = z.object({
   timeMinutes: z.object({ min: z.number().int().min(1), max: z.number().int().min(1) }),
   toolsExtra: z.array(ToolItemSchema).describe("Tools specific to this car beyond the standard list, e.g. an unusual bolt drive"),
   partsNeeded: z.array(z.object({ name: z.string().min(1), notes: z.string().nullable() })),
-  steps: z.array(GuideStepSchema).min(6),
+  steps: z.array(GuideStepSchema).min(4),
   figures: z.array(GuideFigureSchema).describe("Every torque, capacity or wear figure the job needs, listed by name with value null"),
   gotchas: z.array(z.string()).describe("Model-specific pitfalls"),
   verification: z.array(z.string()).min(1).describe("What done correctly looks like"),
@@ -72,6 +76,14 @@ export const ModelGuideOutputSchema = z.object({
 });
 
 export type ModelGuideOutput = z.infer<typeof ModelGuideOutputSchema>;
+
+/** What the model must produce for a given job: the diagram labels are exactly that job's diagram keys. */
+export function modelOutputSchemaFor(job: JobDefinition) {
+  return z.object({
+    scope: GuideScopeSchema,
+    content: GuideContentSchema.extend({ diagramLabels: diagramLabelsSchemaFor(job) }),
+  });
+}
 export type GuideScope = z.infer<typeof GuideScopeSchema>;
 export type GuideContent = z.infer<typeof GuideContentSchema>;
 
@@ -109,6 +121,6 @@ export type GuideRecord = z.infer<typeof GuideRecordSchema>;
 export type SpecViolation = z.infer<typeof SpecViolationSchema>;
 
 /** JSON Schema for the model. zod 4 emits draft 2020-12 with additionalProperties: false. */
-export function modelOutputJsonSchema(): Record<string, unknown> {
-  return z.toJSONSchema(ModelGuideOutputSchema) as Record<string, unknown>;
+export function modelOutputJsonSchema(job?: JobDefinition): Record<string, unknown> {
+  return z.toJSONSchema(job ? modelOutputSchemaFor(job) : ModelGuideOutputSchema) as Record<string, unknown>;
 }
